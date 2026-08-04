@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Calculator Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/styles.css"
+    >
+</head>
+<body>
+    <main class="container">
+        <section class="card">
+            <div class="page-header">
+                <div>
+                    <h1>Calculation Dashboard</h1>
+                    <p>
+                        Create, view, update, and delete
+                        your calculations.
+                    </p>
+                </div>
+
+                <button
+                    id="logout-button"
+                    type="button"
+                >
+                    Log Out
+                </button>
+            </div>
+
+            <div
+                id="message"
+                class="message"
+                aria-live="polite"
+            ></div>
+
+            <form id="calculation-form">
+                <input
+                    type="hidden"
+                    id="calculation-id"
+                >
+
+                <label for="number-a">
+                    First Number
+                </label>
+                <input
+                    type="number"
+                    id="number-a"
+                    step="any"
+                    required
+                >
+
+                <label for="number-b">
+                    Second Number
+                </label>
+                <input
+                    type="number"
+                    id="number-b"
+                    step="any"
+                    required
+                >
+
+                <label for="calculation-type">
+                    Operation
+                </label>
+                <select
+                    id="calculation-type"
+                    required
+                >
+                    <option value="Add">Add</option>
+                    <option value="Sub">Subtract</option>
+                    <option value="Multiply">Multiply</option>
+                    <option value="Divide">Divide</option>
+                </select>
+
+                <div class="button-group">
+                    <button
+                        id="submit-button"
+                        type="submit"
+                    >
+                        Add Calculation
+                    </button>
+
+                    <button
+                        id="cancel-button"
+                        type="button"
+                        hidden
+                    >
+                        Cancel Edit
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Your Calculations</h2>
+
+            <div id="calculation-list">
+                <p>No calculations found.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/calculations.js"></script>
+</body>
+</html>

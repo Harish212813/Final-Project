@@ -21,6 +21,7 @@ from app.schemas import (
 )
 from app.security import (
     create_access_token,
+    get_current_user,
     hash_password,
     verify_password,
 )
@@ -38,6 +39,7 @@ app.mount(
     name="static",
 )
 
+
 @app.get("/register-page", include_in_schema=False)
 def register_page():
     return FileResponse("app/static/register.html")
@@ -47,19 +49,27 @@ def register_page():
 def login_page():
     return FileResponse("app/static/login.html")
 
-
+@app.get("/calculations-page", include_in_schema=False)
+def calculations_page():
+    return FileResponse("app/static/calculations.html")
 
 
 @app.get("/")
 def home():
     logger.info("Home endpoint was called")
-    return {"message": "FastAPI Calculator is running"}
+
+    return {
+        "message": "FastAPI Calculator is running"
+    }
 
 
 @app.get("/add")
 def add_numbers(a: float, b: float):
     result = add(a, b)
-    logger.info(f"Add operation: {a} + {b} = {result}")
+
+    logger.info(
+        f"Add operation: {a} + {b} = {result}"
+    )
 
     return {
         "operation": "add",
@@ -70,7 +80,10 @@ def add_numbers(a: float, b: float):
 @app.get("/subtract")
 def subtract_numbers(a: float, b: float):
     result = subtract(a, b)
-    logger.info(f"Subtract operation: {a} - {b} = {result}")
+
+    logger.info(
+        f"Subtract operation: {a} - {b} = {result}"
+    )
 
     return {
         "operation": "subtract",
@@ -81,7 +94,10 @@ def subtract_numbers(a: float, b: float):
 @app.get("/multiply")
 def multiply_numbers(a: float, b: float):
     result = multiply(a, b)
-    logger.info(f"Multiply operation: {a} * {b} = {result}")
+
+    logger.info(
+        f"Multiply operation: {a} * {b} = {result}"
+    )
 
     return {
         "operation": "multiply",
@@ -93,7 +109,10 @@ def multiply_numbers(a: float, b: float):
 def divide_numbers(a: float, b: float):
     try:
         result = divide(a, b)
-        logger.info(f"Divide operation: {a} / {b} = {result}")
+
+        logger.info(
+            f"Divide operation: {a} / {b} = {result}"
+        )
 
         return {
             "operation": "divide",
@@ -152,7 +171,9 @@ def create_user(
     new_user = User(
         username=user_data.username,
         email=user_data.email,
-        password_hash=hash_password(user_data.password),
+        password_hash=hash_password(
+            user_data.password
+        ),
     )
 
     try:
@@ -168,7 +189,9 @@ def create_user(
             detail="Username or email already exists.",
         )
 
-    logger.info(f"New user created: {new_user.username}")
+    logger.info(
+        f"New user created: {new_user.username}"
+    )
 
     return new_user
 
@@ -194,7 +217,9 @@ def login_user(
             detail="Invalid username or password.",
         )
 
-    logger.info(f"User logged in: {user.username}")
+    logger.info(
+        f"User logged in: {user.username}"
+    )
 
     return {
         "message": "Login successful.",
@@ -203,7 +228,7 @@ def login_user(
     }
 
 
-# New Module 13 JWT registration route
+# Module 13 JWT registration route
 @app.post(
     "/register",
     response_model=TokenResponse,
@@ -231,7 +256,9 @@ def register_with_token(
     new_user = User(
         username=user_data.username,
         email=user_data.email,
-        password_hash=hash_password(user_data.password),
+        password_hash=hash_password(
+            user_data.password
+        ),
     )
 
     try:
@@ -256,7 +283,8 @@ def register_with_token(
     )
 
     logger.info(
-        f"New user registered with JWT: {new_user.username}"
+        f"New user registered with JWT: "
+        f"{new_user.username}"
     )
 
     return {
@@ -266,7 +294,7 @@ def register_with_token(
     }
 
 
-# New Module 13 JWT login route
+# Module 13 JWT login route
 @app.post(
     "/login",
     response_model=TokenResponse,
@@ -298,7 +326,9 @@ def login_with_token(
         }
     )
 
-    logger.info(f"User logged in with JWT: {user.username}")
+    logger.info(
+        f"User logged in with JWT: {user.username}"
+    )
 
     return {
         "access_token": access_token,
@@ -307,7 +337,7 @@ def login_with_token(
     }
 
 
-
+# Add calculation
 @app.post(
     "/calculations",
     response_model=CalculationRead,
@@ -316,6 +346,7 @@ def login_with_token(
 def create_calculation(
     calculation_data: CalculationCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         result = CalculationFactory.calculate(
@@ -323,6 +354,7 @@ def create_calculation(
             calculation_data.b,
             calculation_data.type,
         )
+
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -334,6 +366,7 @@ def create_calculation(
         b=calculation_data.b,
         type=calculation_data.type.value,
         result=result,
+        user_id=current_user.id,
     )
 
     db.add(new_calculation)
@@ -341,25 +374,37 @@ def create_calculation(
     db.refresh(new_calculation)
 
     logger.info(
-        f"Calculation created: "
+        f"Calculation created by user "
+        f"{current_user.id}: "
         f"{new_calculation.type} "
-        f"{new_calculation.a}, {new_calculation.b}"
+        f"{new_calculation.a}, "
+        f"{new_calculation.b}"
     )
 
     return new_calculation
 
 
+# Browse calculations
 @app.get(
     "/calculations",
     response_model=list[CalculationRead],
 )
 def browse_calculations(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    calculations = db.query(Calculation).all()
+    calculations = (
+        db.query(Calculation)
+        .filter(
+            Calculation.user_id == current_user.id
+        )
+        .all()
+    )
+
     return calculations
 
 
+# Read one calculation
 @app.get(
     "/calculations/{calculation_id}",
     response_model=CalculationRead,
@@ -367,10 +412,14 @@ def browse_calculations(
 def read_calculation(
     calculation_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     calculation = (
         db.query(Calculation)
-        .filter(Calculation.id == calculation_id)
+        .filter(
+            Calculation.id == calculation_id,
+            Calculation.user_id == current_user.id,
+        )
         .first()
     )
 
@@ -383,6 +432,7 @@ def read_calculation(
     return calculation
 
 
+# Edit calculation
 @app.put(
     "/calculations/{calculation_id}",
     response_model=CalculationRead,
@@ -391,10 +441,14 @@ def update_calculation(
     calculation_id: int,
     calculation_data: CalculationUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     calculation = (
         db.query(Calculation)
-        .filter(Calculation.id == calculation_id)
+        .filter(
+            Calculation.id == calculation_id,
+            Calculation.user_id == current_user.id,
+        )
         .first()
     )
 
@@ -410,6 +464,7 @@ def update_calculation(
             calculation_data.b,
             calculation_data.type,
         )
+
     except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -424,10 +479,15 @@ def update_calculation(
     db.commit()
     db.refresh(calculation)
 
-    logger.info(f"Calculation updated: {calculation.id}")
+    logger.info(
+        f"Calculation {calculation.id} updated "
+        f"by user {current_user.id}"
+    )
+
     return calculation
 
 
+# Delete calculation
 @app.delete(
     "/calculations/{calculation_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -435,10 +495,14 @@ def update_calculation(
 def delete_calculation(
     calculation_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     calculation = (
         db.query(Calculation)
-        .filter(Calculation.id == calculation_id)
+        .filter(
+            Calculation.id == calculation_id,
+            Calculation.user_id == current_user.id,
+        )
         .first()
     )
 
@@ -451,5 +515,11 @@ def delete_calculation(
     db.delete(calculation)
     db.commit()
 
-    logger.info(f"Calculation deleted: {calculation_id}")
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    logger.info(
+        f"Calculation {calculation_id} deleted "
+        f"by user {current_user.id}"
+    )
+
+    return Response(
+        status_code=status.HTTP_204_NO_CONTENT
+    )

@@ -59,8 +59,12 @@ def test_user_login(page: Page):
 
     page.click("button[type='submit']")
 
-    expect(page.locator("#message")).to_have_text(
-        "Login successful!"
+    page.wait_for_url(
+        f"{BASE_URL}/calculations-page"
+    )
+
+    expect(page).to_have_url(
+        f"{BASE_URL}/calculations-page"
     )
 
     access_token = page.evaluate(

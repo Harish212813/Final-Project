@@ -45,7 +45,9 @@ def test_calculation_read_schema():
         b=2,
         type="Divide",
         result=4,
+        user_id=1,
     )
 
     assert calculation.id == 1
     assert calculation.result == 4
+    assert calculation.user_id == 1

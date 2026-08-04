@@ -155,6 +155,3 @@ GitHub Actions automatically:
 - Builds the Docker image
 - Pushes the Docker image to Docker Hub after successful tests
 
-## Author
-
-Akhil B

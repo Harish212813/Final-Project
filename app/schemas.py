@@ -77,5 +77,6 @@ class CalculationRead(BaseModel):
     b: float
     type: CalculationType
     result: float
+    user_id: int
 
     model_config = ConfigDict(from_attributes=True)

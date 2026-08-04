@@ -40,12 +40,11 @@ loginForm.addEventListener("submit", async (event) => {
             data.access_token
         );
 
-        message.textContent =
-            "Login successful!";
-    }
-    catch (error) {
+        window.location.href = "/calculations-page";
+        return;
+
+    } catch (error) {
         message.textContent =
             "Unable to connect to server.";
     }
-
 });
