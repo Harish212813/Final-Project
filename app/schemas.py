@@ -20,6 +20,7 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+
 class UserEmailLogin(BaseModel):
     email: EmailStr
     password: str
@@ -45,6 +46,8 @@ class CalculationType(str, Enum):
     SUBTRACT = "Sub"
     MULTIPLY = "Multiply"
     DIVIDE = "Divide"
+    POWER = "Power"
+    MODULUS = "Modulus"
 
 
 class CalculationCreate(BaseModel):
@@ -53,9 +56,13 @@ class CalculationCreate(BaseModel):
     type: CalculationType
 
     @model_validator(mode="after")
-    def validate_division(self):
+    def validate_calculation(self):
         if self.type == CalculationType.DIVIDE and self.b == 0:
             raise ValueError("Cannot divide by zero")
+
+        if self.type == CalculationType.MODULUS and self.b == 0:
+            raise ValueError("Cannot perform modulus by zero")
+
         return self
 
 
@@ -65,9 +72,13 @@ class CalculationUpdate(BaseModel):
     type: CalculationType
 
     @model_validator(mode="after")
-    def validate_division(self):
+    def validate_calculation(self):
         if self.type == CalculationType.DIVIDE and self.b == 0:
             raise ValueError("Cannot divide by zero")
+
+        if self.type == CalculationType.MODULUS and self.b == 0:
+            raise ValueError("Cannot perform modulus by zero")
+
         return self
 
 

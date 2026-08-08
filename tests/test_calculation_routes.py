@@ -214,7 +214,7 @@ def test_create_invalid_calculation_type(client):
         json={
             "a": 10,
             "b": 5,
-            "type": "Power",
+            "type": "SquareRoot",
         },
     )
 
@@ -327,3 +327,129 @@ def test_invalid_token(client, method, path):
     )
 
     assert response.status_code == 401
+
+
+def test_create_power_calculation(client):
+    token = register_user(client)
+
+    response = client.post(
+        "/calculations",
+        headers=auth_headers(token),
+        json={
+            "a": 2,
+            "b": 3,
+            "type": "Power",
+        },
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["a"] == 2
+    assert data["b"] == 3
+    assert data["type"] == "Power"
+    assert data["result"] == 8
+
+
+def test_create_modulus_calculation(client):
+    token = register_user(client)
+
+    response = client.post(
+        "/calculations",
+        headers=auth_headers(token),
+        json={
+            "a": 10,
+            "b": 3,
+            "type": "Modulus",
+        },
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["a"] == 10
+    assert data["b"] == 3
+    assert data["type"] == "Modulus"
+    assert data["result"] == 1
+
+
+def test_create_modulus_by_zero(client):
+    token = register_user(client)
+
+    response = client.post(
+        "/calculations",
+        headers=auth_headers(token),
+        json={
+            "a": 10,
+            "b": 0,
+            "type": "Modulus",
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_power_calculation_saved_in_history(client):
+    token = register_user(client)
+    headers = auth_headers(token)
+
+    create_response = client.post(
+        "/calculations",
+        headers=headers,
+        json={
+            "a": 3,
+            "b": 4,
+            "type": "Power",
+        },
+    )
+
+    assert create_response.status_code == 201
+
+    response = client.get(
+        "/calculations",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    calculations = response.json()
+
+    assert any(
+        calculation["type"] == "Power"
+        and calculation["result"] == 81
+        for calculation in calculations
+    )
+
+
+def test_modulus_calculation_saved_in_history(client):
+    token = register_user(client)
+    headers = auth_headers(token)
+
+    create_response = client.post(
+        "/calculations",
+        headers=headers,
+        json={
+            "a": 20,
+            "b": 6,
+            "type": "Modulus",
+        },
+    )
+
+    assert create_response.status_code == 201
+
+    response = client.get(
+        "/calculations",
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+
+    calculations = response.json()
+
+    assert any(
+        calculation["type"] == "Modulus"
+        and calculation["result"] == 2
+        for calculation in calculations
+    )

@@ -108,6 +108,7 @@ function displayCalculations(calculations) {
                 <strong>
                     ${calculation.type}
                 </strong>
+
                 <p>
                     ${calculation.a} and
                     ${calculation.b}
@@ -288,6 +289,17 @@ form.addEventListener(
             return;
         }
 
+        if (
+            calculationType === "Modulus" &&
+            numberB === 0
+        ) {
+            showMessage(
+                "Cannot perform modulus by zero.",
+                true
+            );
+            return;
+        }
+
         const method = calculationId
             ? "PUT"
             : "POST";
@@ -317,20 +329,31 @@ form.addEventListener(
             if (!response.ok) {
                 const detail = data?.detail;
 
+                if (Array.isArray(detail)) {
+                    throw new Error(
+                        detail[0]?.msg ||
+                        "Unable to save calculation."
+                    );
+                }
+
                 throw new Error(
-                    typeof detail === "string"
-                        ? detail
-                        : "Unable to save calculation."
+                    detail ||
+                    "Unable to save calculation."
                 );
             }
 
-            showMessage(
-                calculationId
-                    ? "Calculation updated successfully."
-                    : "Calculation added successfully."
-            );
+            if (calculationId) {
+                showMessage(
+                    "Calculation updated successfully."
+                );
+            } else {
+                showMessage(
+                    "Calculation added successfully."
+                );
+            }
 
             resetForm();
+
             await loadCalculations();
 
         } catch (error) {

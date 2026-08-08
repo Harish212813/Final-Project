@@ -44,6 +44,7 @@ def test_calculation_bread(page: Page):
     # Add
     page.fill("#number-a", "10")
     page.fill("#number-b", "5")
+
     page.select_option(
         "#calculation-type",
         "Add",
@@ -113,6 +114,74 @@ def test_divide_by_zero_validation(page: Page):
     ).to_have_text(
         "Cannot divide by zero."
     )
+
+
+def test_power_calculation(page: Page):
+    login(page)
+
+    page.fill("#number-a", "2")
+    page.fill("#number-b", "3")
+
+    page.select_option(
+        "#calculation-type",
+        "Power",
+    )
+
+    page.click("#submit-button")
+
+    expect(
+        page.locator(".calculation-item")
+    ).to_contain_text("Power")
+
+    expect(
+        page.locator(".calculation-item")
+    ).to_contain_text("8")
+
+
+def test_modulus_calculation(page: Page):
+    login(page)
+
+    page.fill("#number-a", "10")
+    page.fill("#number-b", "3")
+
+    page.select_option(
+        "#calculation-type",
+        "Modulus",
+    )
+
+    page.click("#submit-button")
+
+    expect(
+        page.locator(".calculation-item")
+    ).to_contain_text("Modulus")
+
+    expect(
+        page.locator(".calculation-item")
+    ).to_contain_text("1")
+
+
+def test_modulus_by_zero_validation(page: Page):
+    login(page)
+
+    page.fill("#number-a", "10")
+    page.fill("#number-b", "0")
+
+    page.select_option(
+        "#calculation-type",
+        "Modulus",
+    )
+
+    page.click("#submit-button")
+
+    expect(
+        page.locator("#message")
+    ).to_have_text(
+        "Cannot perform modulus by zero."
+    )
+
+    expect(
+        page.locator(".calculation-item")
+    ).to_have_count(0)
 
 
 def test_redirect_without_token(page: Page):

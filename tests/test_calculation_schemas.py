@@ -25,7 +25,7 @@ def test_calculation_create_invalid_type():
         CalculationCreate(
             a=10,
             b=5,
-            type="Power",
+            type="SquareRoot",
         )
 
 
