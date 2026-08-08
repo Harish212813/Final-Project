@@ -1,10 +1,43 @@
-# FastAPI Calculator
+# FastAPI Calculator - Final Project
 
 ## Overview
 
 This project is a full-stack FastAPI calculator application developed throughout the course. It includes secure user registration and login, JWT authentication, PostgreSQL database integration, complete BREAD functionality for calculations, automated testing, Docker containerization, and GitHub Actions for CI/CD.
 
-Users can register, log in, and manage their own calculations through a front-end dashboard. Each calculation is connected to the logged-in user, so users can only access their own data.
+For the final project, I expanded the calculator by adding two new calculation types: Power and Modulus. These operations are integrated into the backend, validation schemas, calculation factory, front-end dashboard, and automated tests.
+
+Users can register, log in, and manage their own calculations through the front-end dashboard. Each calculation is connected to the logged-in user, so users can only access their own calculation history.
+
+## Final Project Feature
+
+The advanced feature added for the final project is support for two additional calculation operations:
+
+- Power
+- Modulus
+
+### Power
+
+The Power operation raises the first number to the power of the second number.
+
+Example:
+
+```text
+2 ^ 3 = 8
+```
+
+### Modulus
+
+The Modulus operation returns the remainder after dividing the first number by the second number.
+
+Example:
+
+```text
+10 % 3 = 1
+```
+
+The application also validates modulus operations to prevent modulus by zero.
+
+Both operations are available from the calculation dashboard and are saved to the user's calculation history like the original operations.
 
 ## Features
 
@@ -16,31 +49,47 @@ Users can register, log in, and manage their own calculations through a front-en
 - JWT access tokens
 - Protected calculation routes
 - User-specific calculation records
+- Unauthorized-access handling
+- Logout functionality
 
 ### Calculator Operations
+
+The application supports:
 
 - Add
 - Subtract
 - Multiply
 - Divide
+- Power
+- Modulus
 - Division-by-zero validation
+- Modulus-by-zero validation
 
 ### BREAD Functionality
 
+The application provides complete BREAD functionality for calculations:
+
 - Browse all calculations belonging to the logged-in user
-- Read the details of one calculation
+- Read the details of a specific calculation
 - Edit an existing calculation
 - Add a new calculation
 - Delete a calculation
 
 ### Front-End
 
+The application includes:
+
 - Registration page
 - Login page
 - Calculation dashboard
-- Create, view, edit, and delete controls
+- Create calculation form
+- View calculation functionality
+- Edit calculation functionality
+- Delete calculation functionality
+- Add, Subtract, Multiply, Divide, Power, and Modulus options
 - Client-side numeric validation
 - Division-by-zero validation
+- Modulus-by-zero validation
 - JWT token storage
 - Logout functionality
 
@@ -62,6 +111,7 @@ Users can register, log in, and manage their own calculations through a front-en
 - Docker
 - Docker Compose
 - GitHub Actions
+- Trivy
 
 ## Project Structure
 
@@ -92,22 +142,31 @@ tests/
 ├── test_calculation_model.py
 ├── test_calculation_routes.py
 ├── test_calculation_schemas.py
+├── test_e2e.py
 ├── test_main.py
 ├── test_operations.py
 ├── test_schemas.py
 ├── test_security.py
 ├── test_user_routes.py
 └── test_users.py
+
+.github/
+└── workflows/
+    └── tests.yml
 ```
 
 ## Clone the Repository
 
+Clone the Final Project repository:
+
 ```bash
-git clone https://github.com/Harish212813/FastAPI-Calculator.git
-cd FastAPI-Calculator
+git clone https://github.com/Harish212813/Final-Project.git
+cd Final-Project
 ```
 
 ## Create a Virtual Environment
+
+Create a Python virtual environment:
 
 ```bash
 python -m venv venv
@@ -127,11 +186,13 @@ venv\Scripts\activate
 
 ## Install Dependencies
 
+Install the project dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Install the Playwright browser:
+Install the Playwright Chromium browser:
 
 ```bash
 playwright install chromium
@@ -147,7 +208,7 @@ Start the FastAPI application:
 uvicorn app.main:app --reload
 ```
 
-Open the application at:
+The application can then be accessed at:
 
 ```text
 http://localhost:8000
@@ -171,7 +232,7 @@ Calculation dashboard:
 http://localhost:8000/calculations-page
 ```
 
-Swagger documentation:
+Swagger API documentation:
 
 ```text
 http://localhost:8000/docs
@@ -203,7 +264,9 @@ Stop the containers:
 docker compose down
 ```
 
-## Run Tests
+## Testing
+
+The project contains unit, integration, and end-to-end tests.
 
 Run the complete test suite:
 
@@ -211,15 +274,62 @@ Run the complete test suite:
 pytest
 ```
 
-The completed project currently includes 64 passing tests.
+The completed final project currently has:
 
-Run only the calculation route tests:
+```text
+76 passed
+```
+
+### Unit Tests
+
+Unit tests verify individual application logic including:
+
+- Add
+- Subtract
+- Multiply
+- Divide
+- Power
+- Modulus
+- Division-by-zero handling
+- Modulus-by-zero handling
+- Calculation factory behavior
+- Pydantic validation
+- Password security
+
+Run operation tests with:
+
+```bash
+pytest tests/test_operations.py -v
+```
+
+### Integration Tests
+
+Integration tests verify the FastAPI routes and database interactions, including:
+
+- User registration
+- User login
+- Creating calculations
+- Browsing calculations
+- Reading calculations
+- Editing calculations
+- Deleting calculations
+- Power calculations
+- Modulus calculations
+- Calculation history
+- User ownership and authorization
+- Invalid calculation requests
+
+Run calculation route tests with:
 
 ```bash
 pytest tests/test_calculation_routes.py -v
 ```
 
-Run the Playwright end-to-end tests:
+### End-to-End Tests
+
+Playwright tests verify the application from the user's perspective through the front-end.
+
+Run the E2E tests with:
 
 ```bash
 pytest tests/e2e -v
@@ -236,45 +346,75 @@ The Playwright tests cover:
 - Reading calculations
 - Editing calculations
 - Deleting calculations
+- Power calculations
+- Modulus calculations
 - Division-by-zero validation
+- Modulus-by-zero validation
 - Unauthorized dashboard access
 - Logout
 
 ## Docker Hub
 
-The Docker image is available at:
+The final project Docker image is available at:
 
 ```text
-https://hub.docker.com/r/akhil212813/fastapi-calculator
+https://hub.docker.com/r/akhil212813/fastapi-calculator-final
 ```
 
-Pull the image:
+Pull the latest Docker image with:
 
 ```bash
-docker pull akhil212813/fastapi-calculator:latest
+docker pull akhil212813/fastapi-calculator-final:latest
 ```
 
 ## GitHub Repository
 
+The final project source code is available at:
+
 ```text
-https://github.com/Harish212813/FastAPI-Calculator
+https://github.com/Harish212813/Final-Project
 ```
 
 ## CI/CD
 
-The GitHub Actions workflow is configured to support automated testing and Docker image builds. This helps confirm that the application continues to work correctly whenever changes are pushed to the repository.
+GitHub Actions is used to automatically test, build, scan, and deploy the application.
+
+When code is pushed to the `main` branch, the workflow:
+
+1. Starts a PostgreSQL service.
+2. Installs the Python dependencies.
+3. Installs Playwright and Chromium.
+4. Creates the database tables.
+5. Starts the FastAPI server.
+6. Runs the automated test suite.
+7. Builds the Docker image.
+8. Scans the Docker image with Trivy.
+9. Logs in to Docker Hub using GitHub repository secrets.
+10. Pushes the final Docker image to Docker Hub.
+
+The Docker image is only pushed after the testing job completes successfully.
 
 ## Security
 
-The application includes:
+The application includes several security features:
 
-- Hashed passwords instead of plain-text password storage
+- Passwords are hashed instead of stored as plain text
 - JWT authentication
 - Protected calculation endpoints
 - User ownership checks
-- Server-side validation with Pydantic
+- Pydantic server-side validation
 - Client-side form validation
+- Invalid-token handling
 - Unauthorized-access handling
+- Docker Hub credentials stored using GitHub Actions secrets
+
+## Final Project Summary
+
+For the final project, I extended the existing FastAPI calculator by adding Power and Modulus operations. The new operations were added across the backend calculation logic, Pydantic validation, calculation factory, front-end interface, and automated tests.
+
+The project maintains the existing secure JWT authentication and complete calculation BREAD functionality. Unit, integration, and Playwright E2E tests verify both the existing application and the new final-project functionality.
+
+The application is containerized with Docker and uses GitHub Actions to automatically test, build, scan, and push the final image to Docker Hub.
 
 ## Author
 
