@@ -74,12 +74,12 @@ jobs:
         with:
           context: .
           load: true
-          tags: akhil212813/fastapi-calculator:latest
+          tags: akhil212813/fastapi-calculator-final:latest
 
       - name: Scan Docker image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: akhil212813/fastapi-calculator:latest
+          image-ref: akhil212813/fastapi-calculator-final:latest
           format: table
           exit-code: "0"
           severity: CRITICAL,HIGH
@@ -96,5 +96,5 @@ jobs:
           context: .
           push: true
           tags: |
-            akhil212813/fastapi-calculator:latest
-            akhil212813/fastapi-calculator:${{ github.sha }}
+            akhil212813/fastapi-calculator-final:latest
+            akhil212813/fastapi-calculator-final:${{ github.sha }}
